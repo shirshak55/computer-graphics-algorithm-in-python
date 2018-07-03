@@ -1,0 +1,109 @@
+from math import sin,cos,radians
+import time
+import turtle
+import random
+
+class Cube:
+    center_x = 0
+    center_y = 0
+    points = {}
+    pen = None
+
+    def __init__(self, zoom=100):
+        self.zoom = 100
+        
+        self.points['a'] = [[1*zoom],[-1*zoom],[1*zoom]]
+        self.points['b'] = [[-1*zoom],[-1*zoom],[1*zoom]]
+        self.points['c'] = [[-1*zoom],[-1*zoom],[-1*zoom]]
+        self.points['d'] = [[1*zoom],[-1*zoom],[-1*zoom]]
+
+        self.points['e'] = [[1*zoom],[1*zoom],[1*zoom]]
+        self.points['f'] = [[-1*zoom],[1*zoom],[1*zoom]]
+        self.points['g'] = [[-1*zoom],[1*zoom],[-1*zoom]]
+        self.points['h'] = [[1*zoom],[1*zoom],[-1*zoom]]
+
+        turtle.tracer(0,0)
+        self.pen = turtle.Turtle()
+        self.pen.penup()
+        self.pen.color("white","white")
+        self.pen.hideturtle()
+        self.pen.speed(0)
+        self.pen.pensize(3)
+
+        self.drawCube(self.points)
+
+    def rotate(self, point, yaw_deg, pitch_deg, roll_deg):
+        yaw = radians(yaw_deg)
+        pitch = radians(pitch_deg)
+        roll = radians(roll_deg)
+        Rx = [[1,0,0],
+              [0,cos(yaw),-sin(yaw)],
+              [0,sin(yaw),cos(yaw)]]
+        Ry = [[cos(pitch),0,sin(pitch)],
+              [0,1,0],
+              [-sin(pitch),0,cos(pitch)]]
+        Rz = [[cos(roll),-sin(roll),0],
+              [sin(roll),cos(roll),0],
+              [0,0,1]]
+        Rzy = self.matrixMultiply(Rz,Ry)
+        R = self.matrixMultiply(Rzy,Rx)
+        new_point = self.matrixMultiply(R, point)
+        return new_point
+
+    def rotateCube(self, yaw_deg, pitch_deg, roll_deg):
+        for point in self.points:
+            self.points[point] = self.rotate(self.points[point], yaw_deg, pitch_deg, roll_deg)
+        self.drawCube()
+
+    def matrixMultiply(self, m1, m2):
+        return [[
+            sum([m1_val*m2[m1_col][column] for m1_col,m1_val in enumerate(m1[row])])
+            for column in range(len(m2[0]))] for row in range(len(m1))]
+
+    def drawLine(self, color, point1, point2):
+        self.pen.setpos(point1[0][0], point1[1][0])
+        self.pen.pendown()
+        self.pen.color("white","white")
+        self.pen.setpos(point2[0][0], point2[1][0])
+        self.pen.penup()
+
+    def drawSide(self, point_names, color):
+        self.pen.begin_fill()
+        for i in range(len(point_names)):
+            self.drawLine(color, self.points[point_names[i-1]], self.points[point_names[i]])
+        self.pen.color(color)
+        self.pen.end_fill()
+
+    def findFaceZAverage(self, point_names):
+        total=0
+        for i in range(len(point_names)):
+            total += self.points[point_names[i]][2][0]
+        return total/len(point_names)
+        
+    def drawCube(self, points=None):
+        if points is None:points = self.points
+        self.pen.clear()
+
+        fills = sorted([("abcd","green"),("efgh","blue"),("abfe","purple"),
+                        ("bcgf","orange"),("adhe","red"),("cdhg","yellow")],
+                       key=lambda x: self.findFaceZAverage(x[0]))
+
+        for face in fills:
+            self.drawSide(face[0], face[1])
+        
+        turtle.update()
+
+    def main(self):
+        time.sleep(2)
+        time_to_run = 60
+        yaw_rpm = random.uniform(0, 20)
+        pitch_rpm = random.uniform(0, 20)
+        roll_rpm = random.uniform(0, 20)
+        #self.rotateCube(20,0,0)
+        for i in range(round(60/0.002)):
+            self.rotateCube(yaw_rpm*360/60*0.002,
+                            pitch_rpm*360/60*0.002,
+                            roll_rpm*360/60*0.002)
+            
+a = Cube()
+a.main()
