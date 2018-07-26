@@ -1,3 +1,6 @@
+"""
+This uses perpective view. This is done using turtle module in python
+"""
 import turtle
 from math import sin, cos
 from random import random as f
@@ -81,7 +84,7 @@ def draw_axis(camera, viewer):
 	turtle.color(0,0,0)
 	turtle.width(1)
 
-def demo():
+def start():
 	turtle.title("3d cube demo") 
 	cube = make_cube((100,100,100), 200)
 	colors = [(f(),f(),f()) for _ in range(6)]
@@ -99,4 +102,4 @@ def demo():
 		rotate(cube, angle, axis)
 
 if __name__ == "__main__":
-	demo()
+	start()
