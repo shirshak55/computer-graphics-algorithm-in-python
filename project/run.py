@@ -3,7 +3,7 @@ import math
 import random
 
 # Create Classes
-class MissileCommand(functions.Game):
+class HitTheTargetCommand(functions.Game):
     def __init__(self, screen_width, screen_height, background_coor, title, splash_time):
        functions.Game.__init__(self, screen_width, screen_height, background_coor, title, splash_time)
        self.level = 1
@@ -190,7 +190,7 @@ class EnemyMissile(functions.Sprite):
 # Create Functions
 
 # Initial Game setup
-game = MissileCommand(800, 600, "black", "Hit the target", 5)
+game = HitTheTargetCommand(800, 600, "black", "Hit the target", 5)
 game.score = 0
 
 # Create Sprites
